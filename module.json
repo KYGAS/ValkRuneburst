@@ -1,0 +1,16 @@
+{
+    "disableAutoUpdate": false,
+    "name": "Runeburst Cancel",
+	"author": "KYGAS",
+    "description": "Makes it possible to cancel runeburst earlier.",
+    "options": {
+        "niceName": "Runeburst Cancel",
+        "guiName": "Runeburst Cancel",
+		"settingsVersion": 1,
+		"settingsFile": "config.json",
+		"settingsMigrator": "setting_migration.js"
+    },
+    "version": "1.0",
+    "servers": ["https://raw.githubusercontent.com/KYGAS/ValkRuneburst/master/"],
+    "conflicts": ["quick-runeburst","fast-runeburst"]
+}
