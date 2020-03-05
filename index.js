@@ -60,6 +60,6 @@ module.exports = function ValkFastRB(mod) {
 	mod.hook('S_ACTION_END', 5, {order: -Infinity, filter: {fake: null}}, event => {
 		if(!mod.settings.enabled) return
 			if(!event.gameId == gameId) return;
-				if(([].concat(skillIDs,cancelIDs)).includes(event.skill.id)) return ((event.type==999999)?event.type=4:return false);
+				if(([].concat(skillIDs,cancelIDs)).includes(event.skill.id)) return ((event.type==999999)?event.type=4:0);
 	});
 }
