@@ -8,7 +8,7 @@ module.exports = function ValkFastRB(mod) {
 		model = 0,
 		job = 0;
 	
-	comand.add('valkrb', (arg,delay) =>{
+	command.add('valkrb', (arg,delay) =>{
 		if(arg == undefined){
 			mod.settings.enabled = !mod.settings.enabled;
 			command.message("Quick Runeburst module is now : " + (enabled?"Enabled":"Disabled"));
