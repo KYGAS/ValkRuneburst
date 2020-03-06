@@ -11,13 +11,13 @@ module.exports = function ValkFastRB(mod) {
 	command.add('valkrb', (arg,delay) =>{
 		if(arg == undefined){
 			mod.settings.enabled = !mod.settings.enabled;
-			command.message("Quick Runeburst module is now : " + (enabled?"Enabled":"Disabled"));
+			command.message("Quick Runeburst module is now : " + (mod.settings.enabled?"Enabled":"Disabled"));
 		}else if(arg == 'on'){
 			mod.settings.enabled = true;
-			command.message("Quick Runeburst module is now : " + (enabled?"Enabled":"Disabled"));
+			command.message("Quick Runeburst module is now : " + (mod.settings.enabled?"Enabled":"Disabled"));
 		}else if(arg == 'off'){
 			mod.settings.enabled = false;
-			command.message("Quick Runeburst module is now : " + (enabled?"Enabled":"Disabled"));
+			command.message("Quick Runeburst module is now : " + (mod.settings.enabled?"Enabled":"Disabled"));
 		}else if(arg == 'delay'){
 			if(isNaN){
 				command.message("Delay has to be a number.");
