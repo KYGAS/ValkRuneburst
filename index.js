@@ -9,7 +9,8 @@ module.exports = function ValkFastRB(mod) {
 		job = 0;
 	let goodClass = false;
 	let runes = 0, castedRunes = 0, hitRunes = 0;
-	let canceler =  [], blocker = [];
+	let canceler =  [], blocker = [], unblocker = [];
+	let aspd;
 	
 	command.add('valkrb', (arg,value) =>{
 		if(!arg){
@@ -72,6 +73,10 @@ module.exports = function ValkFastRB(mod) {
 		runes = event.runemarksAdded;
 	})
 	
+	mod.hook('S_PLAYER_STAT_UPDATE', 13, (event) => {
+		aspd = (event.attackSpeed + event.attackSpeedBonus) / event.attackSpeed;
+	});
+	
 	mod.hook('S_ACTION_STAGE', 9, {order: Infinity, filter: {fake: null}}, event => {
 		if(event.gameId != gameId) return;
 		if( ( [].concat( skillIDs, cancelIDs ) ).includes( event.skill.id ) ) return;
@@ -79,6 +84,8 @@ module.exports = function ValkFastRB(mod) {
 		canceler = [];
 		for(let block in blocker) mod.unhook(blocker[block])
 		blocker = [];
+		for(let unblock in unblocker) mod.clearTimeout(unblocker[unblock])
+		unblocker = [];
 	})
 	
 	mod.hook('S_ACTION_STAGE', 9, {order: Infinity, filter: {fake: null}}, event => {
@@ -109,8 +116,28 @@ module.exports = function ValkFastRB(mod) {
 							canceler = [];
 							for(let block in blocker) mod.unhook(blocker[block])
 							blocker = [];
+							for(let unblock in unblocker) mod.clearTimeout(unblocker[unblock])
+							unblocker = [];
 						}
 				}))
+				unblocker.push(mod.setTimeout(()=>{
+					mod.toClient('S_ACTION_END', 5, {
+						gameId : gameId,
+						loc: event.loc,
+						w: event.w,
+						templateId: model,
+						skill: event.skill.id-20,
+						type: 999999,
+						id: event.id,
+					});
+					for(let cast in canceler) mod.unhook(canceler[cast])
+					canceler = [];
+					for(let block in blocker) mod.unhook(blocker[block])
+					blocker = [];
+					for(let unblock in unblocker) mod.clearTimeout(unblocker[unblock])
+					unblocker = [];
+				}, ( 625 + ( ( ( runes<mod.settings.setRunes )?runes:mod.settings.setRunes ) * (700/7) ) ) /aspd ) )
+				
 				break;
 			case 'delay':
 				if(skillIDs.includes(event.skill.id)) event.skill.id -= 30;
