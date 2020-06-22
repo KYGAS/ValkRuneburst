@@ -9,6 +9,7 @@ module.exports = function ValkFastRB(mod) {
 		job = 0;
 	let goodClass = false;
 	let runes = 0, castedRunes = 0, hitRunes = 0;
+	let canceler =  [], blocker = [];
 	
 	command.add('valkrb', (arg,value) =>{
 		if(!arg){
@@ -71,7 +72,16 @@ module.exports = function ValkFastRB(mod) {
 		runes = event.runemarksAdded;
 	})
 	
-	mod.hook('S_ACTION_STAGE', 9, {order: -Infinity, filter: {fake: null}}, event => {
+	mod.hook('S_ACTION_STAGE', 9, {order: Infinity, filter: {fake: null}}, event => {
+		if(event.gameId != gameId) return;
+		if( ( [].concat( skillIDs, cancelIDs ) ).includes( event.skill.id ) ) return;
+		for(let cast in canceler) mod.unhook(canceler[cast])
+		canceler = [];
+		for(let block in blocker) mod.unhook(blocker[block])
+		blocker = [];
+	})
+	
+	mod.hook('S_ACTION_STAGE', 9, {order: Infinity, filter: {fake: null}}, event => {
 		if(!mod.settings.enabled || !goodClass) return;
 		if(event.gameId != gameId) return;
 		if( !( [].concat( skillIDs, cancelIDs ) ).includes( event.skill.id ) ) return;
@@ -79,7 +89,10 @@ module.exports = function ValkFastRB(mod) {
 			case 'hits':
 				castedRunes = runes;
 				hitRunes = 0;
-				let canceler = mod.hook('S_EACH_SKILL_RESULT', 14, (e)=>{
+				blocker.push(mod.hook('C_START_SKILL', 7, {order: -Infinity}, (event)=>{
+					if(![140100,140101,140199].includes(event.skill.id)) return false;
+				}))
+				canceler.push(mod.hook('S_EACH_SKILL_RESULT', 14, (e)=>{
 					if( !( [161220,166220].includes(e.skill.id) ) ) return;
 						hitRunes++;
 						if(hitRunes == castedRunes || hitRunes == mod.settings.setRunes){
@@ -88,13 +101,16 @@ module.exports = function ValkFastRB(mod) {
 								loc: event.loc,
 								w: event.w,
 								templateId: model,
-								skill: event.skill.id,
+								skill: event.skill.id-20,
 								type: 999999,
 								id: event.id,
 							});
-							mod.unhook(canceler)
+							for(let cast in canceler) mod.unhook(canceler[cast])
+							canceler = [];
+							for(let block in blocker) mod.unhook(blocker[block])
+							blocker = [];
 						}
-				})
+				}))
 				break;
 			case 'delay':
 				if(skillIDs.includes(event.skill.id)) event.skill.id -= 30;
