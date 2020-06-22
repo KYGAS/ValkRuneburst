@@ -1,8 +1,10 @@
 "use strict"
 
 const DefaultSettings = {
-    "enabled" : true,
-	"delay" : 600
+	"enabled": true,
+	"mode": 'hits',
+	"setRunes": 7,
+	"delay": 600
 }
 
 function MigrateSettings(from_ver, to_ver, settings) {//config version, module version, data
