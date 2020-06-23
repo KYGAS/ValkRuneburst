@@ -73,7 +73,7 @@ module.exports = function ValkFastRB(mod) {
 		runes = event.runemarksAdded;
 	})
 	
-	mod.hook('S_PLAYER_STAT_UPDATE', 13, (event) => {
+	mod.hook('S_PLAYER_STAT_UPDATE', ( (mod.clientInterface==undefined) ? 13 : 14 ), (event) => {
 		aspd = (event.attackSpeed + event.attackSpeedBonus) / event.attackSpeed;
 	});
 	
