@@ -175,7 +175,7 @@ module.exports = function ValkFastRB(mod) {
 		if(!mod.settings.enabled || !goodClass) return
 			if(!event.gameId == gameId) return;
 				if(([].concat(skillIDs,cancelIDs)).includes(event.skill.id)) {
-					if(event.type == 99999){
+					if(event.type == 999999){
 						event.type = 4;
 						return true;
 					}
