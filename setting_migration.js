@@ -4,7 +4,8 @@ const DefaultSettings = {
 	"enabled": true,
 	"mode": 'hits',
 	"setRunes": 7,
-	"delay": 600
+	"delay": 600,
+	"myAveragePing": 60
 }
 
 function MigrateSettings(from_ver, to_ver, settings) {//config version, module version, data

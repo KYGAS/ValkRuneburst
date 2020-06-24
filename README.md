@@ -24,3 +24,7 @@ If you use a skill meanwhile runeburst hits are still ongoing you will lose your
 !valkrb hits {VALUE} - sets the optimal number of runes to cancel runeburst at !if you have less runes stacked it will cancel after the last hits!
 
 !valkrb mode {VALUE} - sets the mode used to cancel runeburst. { hits or delay }. Hits mode will cancel it after the set amount of hits or after the last hit if less or equal to the set amount. Delay mode will cancel it after the set delay.
+
+!valkrb mode {VALUE} - sets the mode used to cancel runeburst. { hits or delay }. Hits mode will cancel it after the set amount of hits or after the last hit if less or equal to the set amount. Delay mode will cancel it after the set delay.
+
+!valkrb ping {VALUE} - idk why I named it myAveragePing but if you notice that you are losing your dreamblaze buff with hits method, increase this value... can be negative if you want "safe cancel" to be faster, etc...

@@ -55,6 +55,15 @@ module.exports = function ValkFastRB(mod) {
 					command.message("Cancel mode options : hits | delay ");
 				}
 				break;
+			case 'ping':
+				if( !value || isNaN(value) ){
+					command.message('Ping amount has to be a number')
+				}
+				else{
+					mod.settings.myAveragePing = Number(value);
+					command.message("Average ping set to : " + value);
+				}
+				break;
 			default:
 				command.message("Unknown command. Available commands are : on|off|delay {Value}");
 				break;
@@ -121,12 +130,13 @@ module.exports = function ValkFastRB(mod) {
 						}
 				}))
 				unblocker.push(mod.setTimeout(()=>{
+					if(skillIDs.includes(event.skill.id)) event.skill.id -= 30;
 					mod.toClient('S_ACTION_END', 5, {
 						gameId : gameId,
 						loc: event.loc,
 						w: event.w,
 						templateId: model,
-						skill: event.skill.id-20,
+						skill: event.skill.id,
 						type: 999999,
 						id: event.id,
 					});
@@ -136,8 +146,7 @@ module.exports = function ValkFastRB(mod) {
 					blocker = [];
 					for(let unblock in unblocker) mod.clearTimeout(unblocker[unblock])
 					unblocker = [];
-				}, ( 625 + ( ( ( runes<mod.settings.setRunes )?runes:mod.settings.setRunes ) * (700/7) ) ) /aspd ) )
-				
+				}, 1300 +  mod.settings.myAveragePing))
 				break;
 			case 'delay':
 				if(skillIDs.includes(event.skill.id)) event.skill.id -= 30;

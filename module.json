@@ -6,11 +6,11 @@
     "options": {
         "niceName": "Runeburst Cancel",
         "guiName": "Runeburst Cancel",
-		"settingsVersion": 2,
+		"settingsVersion": 3,
 		"settingsFile": "config.json",
 		"settingsMigrator": "setting_migration.js"
     },
-    "version": "2.0",
+    "version": "3.0",
     "servers": ["https://raw.githubusercontent.com/KYGAS/ValkRuneburst/master/"],
     "conflicts": ["quick-runeburst","fast-runeburst"]
 }
