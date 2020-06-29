@@ -1,6 +1,6 @@
 const JOB_VALK = 12;
-let skillIDs = [161230,166230];
-let cancelIDs = [161200,166200];
+let rbIds = [160100, 160130, 160199, 160200, 160230, 160299, 160300, 160330, 160399, 160400, 160430, 160499, 160500, 160530, 160599, 160600, 160630, 160699, 160700, 160730, 160799, 160800, 160830, 160899, 160900, 160930, 160999, 161000, 161030, 161099, 161100, 161130, 161199, 161200, 161230, 161299, 165100, 165130, 165200, 165230, 165300, 165330, 165400, 165430, 165500, 165530, 165600, 165630, 165700, 165730, 165800, 165830, 165900, 165930, 166000, 166030, 166100, 166130, 166200, 166230]
+let hitIds = [160120, 160220, 160320, 160420, 160520, 160620, 160720, 160820, 160920, 161020, 161120, 161220, 165120, 165220, 165320, 165420, 165520, 165620, 165720, 165820, 165920, 166020, 166120, 166220]
 
 module.exports = function ValkFastRB(mod) {
 	const { command } = mod.require
@@ -88,7 +88,7 @@ module.exports = function ValkFastRB(mod) {
 	
 	mod.hook('S_ACTION_STAGE', 9, {order: Infinity, filter: {fake: null}}, event => {
 		if(event.gameId != gameId) return;
-		if( ( [].concat( skillIDs, cancelIDs ) ).includes( event.skill.id ) ) return;
+		if( rbIds.includes( event.skill.id ) ) return;
 		for(let cast in canceler) mod.unhook(canceler[cast])
 		canceler = [];
 		for(let block in blocker) mod.unhook(blocker[block])
@@ -100,7 +100,7 @@ module.exports = function ValkFastRB(mod) {
 	mod.hook('S_ACTION_STAGE', 9, {order: Infinity, filter: {fake: null}}, event => {
 		if(!mod.settings.enabled || !goodClass) return;
 		if(event.gameId != gameId) return;
-		if( !( [].concat( skillIDs, cancelIDs ) ).includes( event.skill.id ) ) return;
+		if( !( rbIds ).includes( event.skill.id ) ) return;
 		switch(mod.settings.mode){
 			case 'hits':
 				castedRunes = runes;
@@ -109,7 +109,7 @@ module.exports = function ValkFastRB(mod) {
 					if(![140100,140101,140199].includes(event.skill.id)) return false;
 				}))
 				canceler.push(mod.hook('S_EACH_SKILL_RESULT', 14, (e)=>{
-					if( !( [161220,166220].includes(e.skill.id) ) ) return;
+					if( !( hitIds.includes(e.skill.id) ) ) return;
 						hitRunes++;
 						if(hitRunes == castedRunes || hitRunes == mod.settings.setRunes){
 							mod.toClient('S_ACTION_END', 5, {
@@ -117,9 +117,9 @@ module.exports = function ValkFastRB(mod) {
 								loc: event.loc,
 								w: event.w,
 								templateId: model,
-								skill: event.skill.id-20,
+								skill: event.skill.id,
 								type: 999999,
-								id: event.id,
+								id: event.id
 							});
 							for(let cast in canceler) mod.unhook(canceler[cast])
 							canceler = [];
@@ -130,7 +130,7 @@ module.exports = function ValkFastRB(mod) {
 						}
 				}))
 				unblocker.push(mod.setTimeout(()=>{
-					if(skillIDs.includes(event.skill.id)) event.skill.id -= 30;
+					//if(skillIDs.includes(event.skill.id)) event.skill.id -= 30;
 					mod.toClient('S_ACTION_END', 5, {
 						gameId : gameId,
 						loc: event.loc,
@@ -138,7 +138,7 @@ module.exports = function ValkFastRB(mod) {
 						templateId: model,
 						skill: event.skill.id,
 						type: 999999,
-						id: event.id,
+						id: event.id
 					});
 					for(let cast in canceler) mod.unhook(canceler[cast])
 					canceler = [];
@@ -149,8 +149,8 @@ module.exports = function ValkFastRB(mod) {
 				}, 1300 +  mod.settings.myAveragePing))
 				break;
 			case 'delay':
-				if(skillIDs.includes(event.skill.id)) event.skill.id -= 30;
-				if(cancelIDs.includes(event.skill.id)){
+				//if(skillIDs.includes(event.skill.id)) event.skill.id -= 30;
+				if(rbIds.includes(event.skill.id)){
 					mod.setTimeout(() => {
 						mod.toClient('S_ACTION_END', 5, {
 							gameId : gameId,
@@ -159,7 +159,7 @@ module.exports = function ValkFastRB(mod) {
 							templateId: model,
 							skill: event.skill.id,
 							type: 999999,
-							id: event.id,
+							id: event.id
 						});
 					}, mod.settings.delay);
 				}
@@ -174,7 +174,7 @@ module.exports = function ValkFastRB(mod) {
 	mod.hook('S_ACTION_END', 5, {order: -Infinity, filter: {fake: null}}, event => {
 		if(!mod.settings.enabled || !goodClass) return
 			if(!event.gameId == gameId) return;
-				if(([].concat(skillIDs,cancelIDs)).includes(event.skill.id)) {
+				if(rbIds.includes(event.skill.id)) {
 					if(event.type == 999999){
 						event.type = 4;
 						return true;
