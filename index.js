@@ -1,5 +1,7 @@
 const JOB_VALK = 12;
-let rbIds = [160100, 160130, 160199, 160200, 160230, 160299, 160300, 160330, 160399, 160400, 160430, 160499, 160500, 160530, 160599, 160600, 160630, 160699, 160700, 160730, 160799, 160800, 160830, 160899, 160900, 160930, 160999, 161000, 161030, 161099, 161100, 161130, 161199, 161200, 161230, 161299, 165100, 165130, 165200, 165230, 165300, 165330, 165400, 165430, 165500, 165530, 165600, 165630, 165700, 165730, 165800, 165830, 165900, 165930, 166000, 166030, 166100, 166130, 166200, 166230]
+let rbIds = [160100, 160130, 160199, 160200, 160230, 160299, 160300, 160330, 160399, 160400, 160430, 160499, 160500, 160530, 160599, 160600, 160630, 160699, 160700, 160730, 160799, 160800, 160830, 160899, 160900, 160930, 160999, 161000, 161030, 161099, 161100, 161130, 161199, 
+161200, 161230, 161299, 
+165100, 165130, 165200, 165230, 165300, 165330, 165400, 165430, 165500, 165530, 165600, 165630, 165700, 165730, 165800, 165830, 165900, 165930, 166000, 166030, 166100, 166130, 166200, 166230]
 let hitIds = [160120, 160220, 160320, 160420, 160520, 160620, 160720, 160820, 160920, 161020, 161120, 161220, 165120, 165220, 165320, 165420, 165520, 165620, 165720, 165820, 165920, 166020, 166120, 166220]
 
 module.exports = function ValkFastRB(mod) {
@@ -9,7 +11,7 @@ module.exports = function ValkFastRB(mod) {
 		job = 0;
 	let goodClass = false;
 	let runes = 0, castedRunes = 0, hitRunes = 0;
-	let canceler =  [], blocker = [], unblocker = [];
+	let canceler =  [], blocker = [], unblocker = [], safeAction = [];
 	let aspd;
 	
 	command.add('valkrb', (arg,value) =>{
@@ -64,6 +66,14 @@ module.exports = function ValkFastRB(mod) {
 					command.message("Average ping set to : " + value);
 				}
 				break;
+			case 'setup':
+				command.message("ValkRuneburst current settup :");
+				command.message("Enabled : " + mod.settings.enabled);
+				command.message("Mode : " + mod.settings.mode);
+				command.message("Delay : " + mod.settings.delay);
+				command.message("Hits : " + mod.settings.setRunes);
+				command.message("Ping : " + mod.settings.myAveragePing);
+				break;
 			default:
 				command.message("Unknown command. Available commands are : on|off|delay {Value}");
 				break;
@@ -86,7 +96,7 @@ module.exports = function ValkFastRB(mod) {
 		aspd = (event.attackSpeed + event.attackSpeedBonus) / event.attackSpeed;
 	});
 	
-	mod.hook('S_ACTION_STAGE', 9, {order: Infinity, filter: {fake: null}}, event => {
+	mod.hook('S_ACTION_STAGE', 9, {	filter: {fake: null} }, event => {
 		if(event.gameId != gameId) return;
 		if( rbIds.includes( event.skill.id ) ) return;
 		for(let cast in canceler) mod.unhook(canceler[cast])
@@ -97,10 +107,28 @@ module.exports = function ValkFastRB(mod) {
 		unblocker = [];
 	})
 	
-	mod.hook('S_ACTION_STAGE', 9, {order: Infinity, filter: {fake: null}}, event => {
+    mod.hook('C_START_SKILL', 7, { filter: { fake: null } }, event => {
+        if (!mod.settings.enabled) return;
+		if( ! rbIds.includes( event.skill.id ) ) return;		
+		safeAction.push( mod.hook('S_ACTION_END', 5, { filter: { fake: null } }, (event)=>{
+			if(!mod.settings.enabled || !goodClass) return
+			if(event.gameId != gameId) return;
+				if( rbIds.includes(event.skill.id) ){
+					for(let safe in safeAction) mod.unhook(safeAction[safe])
+					safeAction = [];
+					return;
+				}else {
+					event.type = 4;
+					return true;
+				}
+		}))
+    });
+	
+	mod.hook('S_ACTION_STAGE', 9, { filter: {fake: null} }, event => {
 		if(!mod.settings.enabled || !goodClass) return;
 		if(event.gameId != gameId) return;
 		if( !( rbIds ).includes( event.skill.id ) ) return;
+		event.effectScale = 1;
 		switch(mod.settings.mode){
 			case 'hits':
 				castedRunes = runes;
@@ -130,7 +158,6 @@ module.exports = function ValkFastRB(mod) {
 						}
 				}))
 				unblocker.push(mod.setTimeout(()=>{
-					//if(skillIDs.includes(event.skill.id)) event.skill.id -= 30;
 					mod.toClient('S_ACTION_END', 5, {
 						gameId : gameId,
 						loc: event.loc,
@@ -149,7 +176,6 @@ module.exports = function ValkFastRB(mod) {
 				}, 1300 +  mod.settings.myAveragePing))
 				break;
 			case 'delay':
-				//if(skillIDs.includes(event.skill.id)) event.skill.id -= 30;
 				if(rbIds.includes(event.skill.id)){
 					mod.setTimeout(() => {
 						mod.toClient('S_ACTION_END', 5, {
@@ -169,11 +195,12 @@ module.exports = function ValkFastRB(mod) {
 				console.error('Please correct your selected cancel mode!');
 				break;
 		}
+		return true;
 	});
 
 	mod.hook('S_ACTION_END', 5, {order: -Infinity, filter: {fake: null}}, event => {
 		if(!mod.settings.enabled || !goodClass) return
-			if(!event.gameId == gameId) return;
+			if(event.gameId != gameId) return;
 				if(rbIds.includes(event.skill.id)) {
 					if(event.type == 999999){
 						event.type = 4;
