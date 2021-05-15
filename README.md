@@ -9,7 +9,7 @@ In discussion with some members of the Valkyrie community, we noticed a "bug".
 If you use a skill meanwhile runeburst hits are still ongoing you will lose your Dreamblaze buff. Thats why you can now choose your amount of runes to cancel at if you prefer to keep the damage somewhat higher...
 
 - If you know of ways to prevent the bug or improve the canceling feel free to contact me on Discord : KYGAS#8575
-- Lowkey but also highkey lf an e-girl, hmu 
+- ~~Lowkey but also highkey lf an e-girl, hmu~~ Found my wifeu, thanks all for the applications :UwU:
 
 # Commands:
 
