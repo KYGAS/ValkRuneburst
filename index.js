@@ -12,7 +12,6 @@ module.exports = function ValkFastRB(mod) {
 	let goodClass = false;
 	let runes = 0, castedRunes = 0, hitRunes = 0, passCancel = false;
 	let canceler =  [], blocker = [], unblocker = [], safeAction = [], delayer = [], cancelPacket = null;
-	let aspd;
 	
 	command.add('valkrb', (arg,value) =>{
 		if(!arg){
@@ -104,10 +103,6 @@ module.exports = function ValkFastRB(mod) {
 	mod.hook('S_WEAK_POINT', 1, event => {
 		runes = event.runemarksAdded;
 	})
-	
-	mod.hook('S_PLAYER_STAT_UPDATE', ( (mod.clientInterface==undefined) ? 13 : 14 ), (event) => {
-		aspd = (event.attackSpeed + event.attackSpeedBonus) / event.attackSpeed;
-	});
 	
 	mod.hook('S_ACTION_STAGE', 9, {	order : 100, filter: {fake: null} }, event => {
 		if(event.gameId != gameId) return;
